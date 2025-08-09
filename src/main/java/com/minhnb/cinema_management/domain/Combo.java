@@ -2,8 +2,16 @@ package com.minhnb.cinema_management.domain;
 
 import java.util.List;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Combo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

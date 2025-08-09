@@ -211,6 +211,12 @@ public class AuthController {
                     "Email " + postManUser.getEmail() + "đã tồn tại, vui lòng sử dụng email khác.");
         }
 
+        boolean isPhoneExist = this.userService.isPhoneExist(postManUser.getPhone());
+        if (isPhoneExist) {
+            throw new IdInvalidException(
+                    "Số điện thoại " + postManUser.getPhone() + " đã tồn tại, vui lòng sử dụng số điện thoại khác.");
+        }
+
         String hashPassword = this.passwordEncoder.encode(postManUser.getPassword());
         postManUser.setPassword(hashPassword);
         User ericUser = this.userService.handleCreateUser(postManUser);

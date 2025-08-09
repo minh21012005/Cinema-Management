@@ -38,6 +38,10 @@ public class UserService {
         return this.userRepository.existsByEmail(email);
     }
 
+    public boolean isPhoneExist(String phone) {
+        return this.userRepository.existsByPhone(phone);
+    }
+
     public User handleCreateUser(User user) {
         // check role
         if (user.getRole() != null) {

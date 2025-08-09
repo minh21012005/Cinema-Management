@@ -123,7 +123,7 @@ public class AuthController {
         return ResponseEntity.ok().body(userGetAccount);
     }
 
-    @GetMapping("/auth/refresh")
+    @PostMapping("/auth/refresh")
     @ApiMessage("Get User by refresh token")
     public ResponseEntity<ResLoginDTO> getRefreshToken(
             @CookieValue(name = "refresh_token", defaultValue = "abc") String refresh_token) throws IdInvalidException {
@@ -209,6 +209,12 @@ public class AuthController {
         if (isEmailExist) {
             throw new IdInvalidException(
                     "Email " + postManUser.getEmail() + "đã tồn tại, vui lòng sử dụng email khác.");
+        }
+
+        boolean isPhoneExist = this.userService.isPhoneExist(postManUser.getPhone());
+        if (isPhoneExist) {
+            throw new IdInvalidException(
+                    "Số điện thoại " + postManUser.getPhone() + " đã tồn tại, vui lòng sử dụng số điện thoại khác.");
         }
 
         String hashPassword = this.passwordEncoder.encode(postManUser.getPassword());

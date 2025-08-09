@@ -31,7 +31,17 @@ public class GlobalException {
 
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
-            BadCredentialsException.class,
+            BadCredentialsException.class
+    })
+    public ResponseEntity<RestResponse<Object>> handleAuthException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        res.setMessage("Tài khoản hoặc mật khẩu không chính xác!");
+        res.setError("Unauthorized");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+    }
+
+    @ExceptionHandler(value = {
             IdInvalidException.class,
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {

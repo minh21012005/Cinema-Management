@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.minhnb.cinema_management.util.SecurityUtil;
@@ -26,7 +27,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
 @Configuration
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration {
 
     @Value("${minhnb.jwt.base64-secret}")
@@ -63,12 +64,13 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/api/v1/skills/**").permitAll()
 
                                 .anyRequest().authenticated())
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()) )
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
-                // .exceptionHandling(
-                // exceptions -> exceptions
-                // .authenticationEntryPoint(customAuthenticationEntryPoint) // 401
-                // .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
+                 .exceptionHandling(
+                 exceptions -> exceptions
+                 .authenticationEntryPoint(customAuthenticationEntryPoint) // 401
+                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
 
                 .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -79,7 +81,7 @@ public class SecurityConfiguration {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         grantedAuthoritiesConverter.setAuthoritiesClaimName("permission");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();

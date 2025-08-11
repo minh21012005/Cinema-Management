@@ -1,11 +1,19 @@
 package com.minhnb.cinema_management.service;
 
+import com.minhnb.cinema_management.domain.response.ResUserDTO;
+import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.minhnb.cinema_management.domain.Role;
 import com.minhnb.cinema_management.domain.User;
 import com.minhnb.cinema_management.domain.response.ResCreateUserDTO;
 import com.minhnb.cinema_management.repository.UserRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -38,13 +46,13 @@ public class UserService {
         return this.userRepository.existsByEmail(email);
     }
 
-    public User handleCreateUser(User user) {
-        // check role
-        if (user.getRole() != null) {
-            Role r = this.roleService.fetchById(user.getRole().getId());
-            user.setRole(r != null ? r : null);
-        }
+    public boolean isPhoneExist(String phone) {
+        return this.userRepository.existsByPhone(phone);
+    }
 
+    public User handleCreateUser(User user) {
+        Role role = this.roleService.fetchById(4);
+        user.setRole(role);
         return this.userRepository.save(user);
     }
 
@@ -63,4 +71,40 @@ public class UserService {
         return res;
     }
 
+    public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+
+        // remove sensitive data
+        List<ResUserDTO> listUser = pageUser.getContent()
+                .stream().map(item -> this.convertToResUserDTO(item))
+                .collect(Collectors.toList());
+
+        rs.setResult(listUser);
+
+        return rs;
+    }
+
+    public ResUserDTO convertToResUserDTO(User user) {
+        ResUserDTO res = new ResUserDTO();
+        res.setId(user.getId());
+        res.setEmail(user.getEmail());
+        res.setName(user.getName());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        res.setDateOfBirth(user.getDateOfBirth());
+        res.setPhone(user.getPhone());
+        res.setRole(user.getRole());
+        res.setEnabled(user.isEnabled());
+        return res;
+    }
 }

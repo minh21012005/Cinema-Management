@@ -107,4 +107,27 @@ public class UserService {
         res.setEnabled(user.isEnabled());
         return res;
     }
+
+    public ResUserDTO changeStatusOfUser(long id) {
+        ResUserDTO res = new ResUserDTO();
+        User user = this.userRepository.findById(id).orElse(null);
+        if(user != null) {
+            if(user.isEnabled()) {
+                user.setEnabled(false);
+            }else{
+                user.setEnabled(true);
+            }
+            this.userRepository.save(user);
+            res = this.convertToResUserDTO(user);
+        }
+        return res;
+    }
+
+    public ResUserDTO fetchUserById(long id) {
+        User user = this.userRepository.findById(id).orElse(null);
+        if(user != null) {
+            return convertToResUserDTO(user);
+        }
+        return null;
+    }
 }

@@ -1,7 +1,6 @@
 package com.minhnb.cinema_management.domain;
 
 import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,21 +10,27 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Seat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(nullable = false)
+    private String name; // Ví dụ: A1, B5...
+
+    @Column(nullable = false)
+    private boolean active = true; // true = dùng được, false = ngưng sử dụng
 
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     @ManyToOne
-    @JoinColumn(name = "seat_type_id")
+    @JoinColumn(name = "seat_type_id", nullable = false)
     private SeatType seatType;
 
-    @OneToMany(mappedBy = "seat")
+    @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets;
 }

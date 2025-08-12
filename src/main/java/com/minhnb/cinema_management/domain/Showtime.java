@@ -11,22 +11,27 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Showtime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime startTime;
+    @Column(nullable = false)
+    private LocalDateTime startTime; // Thời gian bắt đầu chiếu
+
+    @Column(nullable = false)
+    private boolean active = true; // Trạng thái suất chiếu
 
     @ManyToOne
-    @JoinColumn(name = "movie_id")
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets;
 }

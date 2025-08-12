@@ -1,7 +1,9 @@
 package com.minhnb.cinema_management.service;
 
+import com.minhnb.cinema_management.domain.request.CreateUserRequest;
 import com.minhnb.cinema_management.domain.response.ResUserDTO;
 import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
+import com.minhnb.cinema_management.util.constant.GenderEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -53,6 +55,19 @@ public class UserService {
     public User handleCreateUser(User user) {
         Role role = this.roleService.fetchById(4);
         user.setRole(role);
+        return this.userRepository.save(user);
+    }
+
+    public User handleCreateUserForManager(CreateUserRequest dto) {
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+        user.setPassword(dto.getPassword());
+        user.setAddress(dto.getAddress());
+        user.setGender(GenderEnum.valueOf(dto.getGender()));
+        user.setDateOfBirth(dto.getDateOfBirth());
+        user.setRole(this.roleService.fetchById(dto.getRoleId()));
         return this.userRepository.save(user);
     }
 

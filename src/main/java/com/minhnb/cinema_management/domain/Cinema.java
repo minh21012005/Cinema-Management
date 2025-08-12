@@ -10,15 +10,27 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Cinema {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String location;
+    @Column(nullable = false)
+    private String name; // Tên cụm rạp
 
-    @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    private String address; // Địa chỉ rạp
+
+    @Column(nullable = false)
+    private String city; // Thành phố / tỉnh
+
+    private String phone; // Số điện thoại liên hệ
+
+    @Column(nullable = false)
+    private boolean active = true; // true = đang hoạt động, false = ngừng hoạt động
+
+    @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
 }

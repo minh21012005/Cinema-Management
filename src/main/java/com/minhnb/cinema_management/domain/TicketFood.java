@@ -1,33 +1,29 @@
 package com.minhnb.cinema_management.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Table(name = "ticket_foods")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TicketFood {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id")
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
-    @ManyToOne
-    @JoinColumn(name = "food_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "food_id", nullable = false)
     private Food food;
 
+    @Column(nullable = false)
     private Integer quantity;
 }

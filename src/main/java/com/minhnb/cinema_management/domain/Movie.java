@@ -11,27 +11,39 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    @Column(nullable = false)
+    private String title; // Tên phim
 
-    private String description;
+    @Column(columnDefinition = "TEXT")
+    private String description; // Mô tả phim
 
-    private int durationInMinutes;
+    @Column(nullable = false)
+    private int durationInMinutes; // Thời lượng (phút)
 
-    private LocalDate releaseDate;
+    @Column(nullable = false)
+    private LocalDate releaseDate; // Ngày phát hành
+
+    @Column(nullable = false)
+    private boolean active = true; // Trạng thái phim
 
     @ManyToMany
-    @JoinTable(name = "movie_category", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(
+            name = "movie_category",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
     private List<Category> categories;
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Showtime> showtimes;
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rating> ratings;
 }

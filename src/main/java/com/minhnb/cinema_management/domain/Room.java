@@ -10,21 +10,28 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Column(nullable = false)
+    private String name; // Tên phòng (Room 1, Room 2...)
+
+    private String type; // Loại phòng (2D, 3D, IMAX...)
+
+    @Column(nullable = false)
+    private boolean active = true; // Trạng thái hoạt động
 
     @ManyToOne
-    @JoinColumn(name = "cinema_id")
+    @JoinColumn(name = "cinema_id", nullable = false)
     private Cinema cinema;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Showtime> showtimes;
 }

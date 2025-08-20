@@ -5,19 +5,18 @@ import com.minhnb.cinema_management.domain.request.CreateUserRequest;
 import com.minhnb.cinema_management.domain.response.ResCreateUserDTO;
 import com.minhnb.cinema_management.domain.response.ResUserDTO;
 import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
-import com.minhnb.cinema_management.service.UserService;
+import com.minhnb.cinema_management.service.admin.UserService;
 import com.minhnb.cinema_management.util.annotation.ApiMessage;
 import com.minhnb.cinema_management.util.error.IdInvalidException;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import com.turkraft.springfilter.boot.Filter;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,11 +33,15 @@ public class UserController {
     @GetMapping("/users")
     @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
-            @Filter Specification<User> spec,
+            @RequestParam Optional<String> email,
+            @RequestParam Optional<String> role,
             Pageable pageable) {
 
+        String emailFilter = email.orElse(null);
+        String roleFilter = role.orElse(null);
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                this.userService.fetchAllUser(spec, pageable));
+                this.userService.fetchAllUser(emailFilter, roleFilter, pageable));
     }
 
     @PutMapping("/users/change-status/{id}")

@@ -1,4 +1,4 @@
-package com.minhnb.cinema_management.repository;
+package com.minhnb.cinema_management.repository.admin;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

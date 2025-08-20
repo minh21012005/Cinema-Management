@@ -22,7 +22,7 @@ import com.minhnb.cinema_management.domain.User;
 import com.minhnb.cinema_management.domain.request.ReqLoginDTO;
 import com.minhnb.cinema_management.domain.response.ResCreateUserDTO;
 import com.minhnb.cinema_management.domain.response.ResLoginDTO;
-import com.minhnb.cinema_management.service.UserService;
+import com.minhnb.cinema_management.service.admin.UserService;
 import com.minhnb.cinema_management.util.SecurityUtil;
 import com.minhnb.cinema_management.util.annotation.ApiMessage;
 import com.minhnb.cinema_management.util.error.IdInvalidException;

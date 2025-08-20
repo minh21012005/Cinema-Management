@@ -1,8 +1,9 @@
-package com.minhnb.cinema_management.service;
+package com.minhnb.cinema_management.service.admin;
 
 import com.minhnb.cinema_management.domain.request.CreateUserRequest;
 import com.minhnb.cinema_management.domain.response.ResUserDTO;
 import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
+import com.minhnb.cinema_management.service.specification.UserSpecification;
 import com.minhnb.cinema_management.util.constant.GenderEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.minhnb.cinema_management.domain.Role;
 import com.minhnb.cinema_management.domain.User;
 import com.minhnb.cinema_management.domain.response.ResCreateUserDTO;
-import com.minhnb.cinema_management.repository.UserRepository;
+import com.minhnb.cinema_management.repository.admin.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,8 +87,9 @@ public class UserService {
         return res;
     }
 
-    public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
-        Page<User> pageUser = this.userRepository.findAll(spec, pageable);
+    public ResultPaginationDTO fetchAllUser(String emailFilter, String roleFilter, Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(
+                UserSpecification.findUsersWithFilters(emailFilter, roleFilter), pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
         ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
@@ -126,10 +128,10 @@ public class UserService {
     public ResUserDTO changeStatusOfUser(long id) {
         ResUserDTO res = new ResUserDTO();
         User user = this.userRepository.findById(id).orElse(null);
-        if(user != null) {
-            if(user.isEnabled()) {
+        if (user != null) {
+            if (user.isEnabled()) {
                 user.setEnabled(false);
-            }else{
+            } else {
                 user.setEnabled(true);
             }
             this.userRepository.save(user);
@@ -140,7 +142,7 @@ public class UserService {
 
     public ResUserDTO fetchUserById(long id) {
         User user = this.userRepository.findById(id).orElse(null);
-        if(user != null) {
+        if (user != null) {
             return convertToResUserDTO(user);
         }
         return null;

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.minhnb.cinema_management.service.UserService;
+import com.minhnb.cinema_management.service.admin.UserService;
 
 @Component("userDetailsService")
 public class UserDetailsCustom implements UserDetailsService {

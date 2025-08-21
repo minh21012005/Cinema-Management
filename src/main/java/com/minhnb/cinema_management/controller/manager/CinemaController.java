@@ -6,6 +6,7 @@ import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
 import com.minhnb.cinema_management.service.manager.CinemaService;
 import com.minhnb.cinema_management.util.annotation.ApiMessage;
 import com.minhnb.cinema_management.util.error.IdInvalidException;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +62,11 @@ public class CinemaController {
     public ResponseEntity<Object> changeStatus(@PathVariable long id) {
         Cinema cinema = this.cinemaService.changeStatusOfCinema(id);
         return ResponseEntity.status(HttpStatus.OK).body(cinema);
+    }
+
+    @PutMapping("/cinemas")
+    @ApiMessage("Update cinema")
+    public ResponseEntity<Cinema> updateCinema(@Valid @RequestBody Cinema cinema) throws IdInvalidException{
+        return ResponseEntity.status(HttpStatus.OK).body(this.cinemaService.updateCinema(cinema));
     }
 }

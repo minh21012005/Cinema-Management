@@ -6,6 +6,7 @@ import com.minhnb.cinema_management.domain.response.ResUserDTO;
 import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
 import com.minhnb.cinema_management.repository.manager.CinemaRepository;
 import com.minhnb.cinema_management.service.specification.CinemaSpecification;
+import com.minhnb.cinema_management.util.error.IdInvalidException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +25,7 @@ public class CinemaService {
         this.cinemaRepository = cinemaRepository;
     }
 
-    public ResultPaginationDTO fetchAllCinema(String name, Pageable pageable){
+    public ResultPaginationDTO fetchAllCinema(String name, Pageable pageable) {
         Page<Cinema> pageCinema = this.cinemaRepository.findAll(
                 CinemaSpecification.findCinemaWithFilters(name),
                 pageable);
@@ -45,19 +47,19 @@ public class CinemaService {
         return rs;
     }
 
-    public boolean existsByName(String name){
+    public boolean existsByName(String name) {
         return this.cinemaRepository.existsByName(name);
     }
 
-    public boolean existsByAddress(String address){
+    public boolean existsByAddress(String address) {
         return this.cinemaRepository.existsByAddress(address);
     }
 
-    public boolean existsByPhone(String phone){
+    public boolean existsByPhone(String phone) {
         return this.cinemaRepository.existsByPhone(phone);
     }
 
-    public Cinema createCinema(Cinema cinema){
+    public Cinema createCinema(Cinema cinema) {
         return this.cinemaRepository.save(cinema);
     }
 
@@ -72,5 +74,43 @@ public class CinemaService {
             this.cinemaRepository.save(cinema);
         }
         return cinema;
+    }
+
+    public Cinema updateCinema(Cinema cinema) throws IdInvalidException {
+        Optional<Cinema> cinemaOptional = this.cinemaRepository.findById(cinema.getId());
+        if (cinemaOptional.isPresent()) {
+            boolean isNameExists = false;
+            boolean isAddressExists = false;
+            boolean isPhoneExists = false;
+            if (!cinema.getName().equals(cinemaOptional.get().getName())) {
+                isNameExists = this.existsByName(cinema.getName());
+            }
+            if (!cinema.getAddress().equals(cinemaOptional.get().getAddress())) {
+                isAddressExists = this.existsByAddress(cinema.getAddress());
+            }
+            if (!cinema.getPhone().equals(cinemaOptional.get().getPhone())) {
+                isPhoneExists = this.existsByPhone(cinema.getPhone());
+            }
+
+            if (isNameExists) {
+                throw new IdInvalidException(
+                        "Tên " + cinema.getName() + "đã tồn tại, vui lòng sử dụng tên khác.");
+            }
+            if (isAddressExists) {
+                throw new IdInvalidException(
+                        "Địa chỉ " + cinema.getAddress() + "đã tồn tại, vui lòng sử dụng địa chỉ khác.");
+            }
+            if (isPhoneExists) {
+                throw new IdInvalidException(
+                        "Số điện thoại " + cinema.getPhone() + "đã tồn tại, vui lòng sử dụng số điện thoại khác.");
+            }
+
+            cinemaOptional.get().setName(cinema.getName());
+            cinemaOptional.get().setCity(cinema.getCity());
+            cinemaOptional.get().setAddress(cinema.getAddress());
+            cinemaOptional.get().setPhone(cinema.getPhone());
+            return this.cinemaRepository.save(cinemaOptional.get());
+        }
+        return null;
     }
 }

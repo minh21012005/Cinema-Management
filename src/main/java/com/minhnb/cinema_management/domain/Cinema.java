@@ -1,5 +1,6 @@
 package com.minhnb.cinema_management.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -31,6 +32,7 @@ public class Cinema {
     @Column(nullable = false)
     private boolean active = true; // true = đang hoạt động, false = ngừng hoạt động
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
 }

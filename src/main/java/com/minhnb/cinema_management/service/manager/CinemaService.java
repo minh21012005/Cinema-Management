@@ -113,4 +113,8 @@ public class CinemaService {
         }
         return null;
     }
+
+    public Optional<Cinema> findById(long id){
+        return this.cinemaRepository.findById(id);
+    }
 }

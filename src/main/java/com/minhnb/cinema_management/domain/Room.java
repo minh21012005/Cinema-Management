@@ -20,7 +20,9 @@ public class Room {
     @Column(nullable = false)
     private String name; // Tên phòng (Room 1, Room 2...)
 
-    private String type; // Loại phòng (2D, 3D, IMAX...)
+    @ManyToOne
+    @JoinColumn(name = "room_type_id", nullable = false)
+    private RoomType roomType; // Liên kết tới bảng room_types
 
     @Column(nullable = false)
     private boolean active = true; // Trạng thái hoạt động

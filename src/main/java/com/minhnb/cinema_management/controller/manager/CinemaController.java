@@ -1,6 +1,7 @@
 package com.minhnb.cinema_management.controller.manager;
 
 import com.minhnb.cinema_management.domain.Cinema;
+import com.minhnb.cinema_management.domain.Room;
 import com.minhnb.cinema_management.domain.response.ResUserDTO;
 import com.minhnb.cinema_management.domain.response.ResultPaginationDTO;
 import com.minhnb.cinema_management.service.manager.CinemaService;
@@ -68,5 +69,14 @@ public class CinemaController {
     @ApiMessage("Update cinema")
     public ResponseEntity<Cinema> updateCinema(@Valid @RequestBody Cinema cinema) throws IdInvalidException{
         return ResponseEntity.status(HttpStatus.OK).body(this.cinemaService.updateCinema(cinema));
+    }
+
+    @GetMapping("/cinemas/{id}")
+    public ResponseEntity<Cinema> findById(@PathVariable Long id) throws IdInvalidException{
+        Optional<Cinema> cinemaOptional = this.cinemaService.findById(id);
+        if(cinemaOptional.isEmpty()){
+            throw new IdInvalidException("Cinema không tồn tại!");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(this.cinemaService.findById(id).get());
     }
 }

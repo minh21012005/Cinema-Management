@@ -12,6 +12,15 @@ import lombok.Setter;
 public class ResRoomDTO {
     private long id;
     private String name;
-    private String type;
+    private Type type;
     private boolean active;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Type{
+        private long id;
+        private String name;
+    }
 }

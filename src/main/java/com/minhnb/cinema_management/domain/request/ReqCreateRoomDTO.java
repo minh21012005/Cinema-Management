@@ -11,4 +11,6 @@ public class ReqCreateRoomDTO {
     private String name;
     private Long cinemaId;
     private Long roomTypeId;
+    private int rows;
+    private int cols;
 }

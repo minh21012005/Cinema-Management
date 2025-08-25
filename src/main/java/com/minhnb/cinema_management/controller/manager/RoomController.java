@@ -4,6 +4,7 @@ import com.minhnb.cinema_management.domain.Cinema;
 import com.minhnb.cinema_management.domain.Room;
 import com.minhnb.cinema_management.domain.RoomType;
 import com.minhnb.cinema_management.domain.request.ReqCreateRoomDTO;
+import com.minhnb.cinema_management.domain.request.ReqRoomDTO;
 import com.minhnb.cinema_management.domain.response.ResRoomDTO;
 import com.minhnb.cinema_management.service.manager.CinemaService;
 import com.minhnb.cinema_management.service.manager.RoomService;
@@ -41,19 +42,30 @@ public class RoomController {
     }
 
     @GetMapping("/rooms/types")
-    public ResponseEntity<List<RoomType>> fetchAllRoomType(){
+    public ResponseEntity<List<RoomType>> fetchAllRoomType() {
         return ResponseEntity.status(HttpStatus.OK).body(this.roomService.fetchAllRoomType());
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<Room> createRoom(@Valid @RequestBody ReqCreateRoomDTO dto) throws IdInvalidException{
+    public ResponseEntity<Room> createRoom(@Valid @RequestBody ReqCreateRoomDTO dto) throws IdInvalidException {
+        if (dto.getRows() <= 0 || dto.getCols() <= 0) {
+            throw new IdInvalidException("Số hàng và số cột phải lớn hơn 0!");
+        }
+        if (dto.getRows() > 25 || dto.getCols() > 25) {
+            throw new IdInvalidException("Số hàng và số cột phải nhỏ hơn hoặc bằng 25!");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(this.roomService.createRoom(dto));
     }
 
+    @PutMapping("/rooms")
+    public ResponseEntity<ResRoomDTO> updateRoom(@RequestBody ReqRoomDTO dto) throws IdInvalidException {
+        return ResponseEntity.status(HttpStatus.OK).body(this.roomService.updateRoom(dto));
+    }
+
     @PutMapping("/rooms/change-status/{id}")
-    public ResponseEntity<Object> changeRoomStatus(@PathVariable Long id) throws IdInvalidException{
+    public ResponseEntity<Object> changeRoomStatus(@PathVariable Long id) throws IdInvalidException {
         Optional<Room> roomOptional = this.roomService.findById(id);
-        if(roomOptional.isEmpty()){
+        if (roomOptional.isEmpty()) {
             throw new IdInvalidException("Room không tồn tại!");
         }
         return ResponseEntity.status(HttpStatus.OK).body(this.roomService.changeStatus(roomOptional.get()));

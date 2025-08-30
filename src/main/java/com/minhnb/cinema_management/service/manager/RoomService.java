@@ -13,6 +13,7 @@ import com.minhnb.cinema_management.repository.manager.RoomTypeRepository;
 import com.minhnb.cinema_management.repository.manager.SeatRepository;
 import com.minhnb.cinema_management.repository.manager.SeatTypeRepository;
 import com.minhnb.cinema_management.util.error.IdInvalidException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -62,44 +63,43 @@ public class RoomService {
         return this.roomTypeRepository.findAll();
     }
 
+    @Transactional
     public Room createRoom(ReqCreateRoomDTO dto) throws IdInvalidException {
-        Room room = new Room();
-        long cinemaId = dto.getCinemaId();
-        List<Room> rooms = this.roomRepository.findByCinema_Id(cinemaId);
-        boolean isNameExists = rooms.stream().anyMatch(r -> r.getName().equals(dto.getName()));
-        if (isNameExists) {
-            throw new IdInvalidException("Tên phòng đã tồn tại, vui lòng chọn tên khác!");
-        }
-        Optional<Cinema> cinemaOptional = this.cinemaService.findById(cinemaId);
-        Optional<RoomType> roomTypeOptional = this.roomTypeRepository.findById(dto.getRoomTypeId());
-        if (roomTypeOptional.isPresent() && cinemaOptional.isPresent()) {
-            room.setName(dto.getName());
-            room.setRoomType(roomTypeOptional.get());
-            room.setCinema(cinemaOptional.get());
-            this.roomRepository.save(room);
+        // 1. Lấy Cinema
+        Cinema cinema = cinemaService.findById(dto.getCinemaId())
+                .orElseThrow(() -> new IdInvalidException("Cinema not found with id = " + dto.getCinemaId()));
 
-            SeatType defaultSeatType = seatTypeRepository.findById(1L)
-                    .orElseThrow(() -> new RuntimeException("SeatType Normal không tồn tại!"));
+        // 2. Lấy RoomType
+        RoomType roomType = roomTypeRepository.findById(dto.getRoomTypeId())
+                .orElseThrow(() -> new IdInvalidException("RoomType not found with id = " + dto.getRoomTypeId()));
 
-            List<Seat> seats = new ArrayList<>();
-            for (int r = 0; r < dto.getRows(); r++) {
-                char rowChar = (char) ('A' + r); // A, B, C...
-                for (int c = 1; c <= dto.getCols(); c++) {
-                    Seat seat = Seat.builder()
-                            .name(rowChar + String.valueOf(c)) // A1, A2...
-                            .room(room)
-                            .seatType(defaultSeatType) // default Normal seat
-                            .active(true)
-                            .build();
-                    seats.add(seat);
-                }
-            }
+        // 3. Khởi tạo Room
+        Room room = Room.builder()
+                .name(dto.getName())
+                .cinema(cinema)
+                .roomType(roomType)
+                .active(true)
+                .build();
 
-            seatRepository.saveAll(seats);
-            room.setSeats(seats);
+        // 4. Map Seats từ DTO
+        List<Seat> seats = dto.getSeats().stream().map(seatDto -> {
+            SeatType seatType = seatTypeRepository.findById(seatDto.getType())
+                    .orElseThrow(() -> new RuntimeException("SeatType not found with id = " + seatDto.getType()));
 
-        }
-        return room;
+            return Seat.builder()
+                    .rowIndex(seatDto.getRow())
+                    .colIndex(seatDto.getCol())
+                    .name(seatDto.getName())
+                    .active(true)
+                    .seatType(seatType)
+                    .room(room) // gắn room
+                    .build();
+        }).toList();
+
+        room.setSeats(seats);
+
+        // 5. Save room (cascade -> save seats)
+        return roomRepository.save(room);
     }
 
     public Optional<Room> findById(Long id) {

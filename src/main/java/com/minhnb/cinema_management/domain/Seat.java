@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "seats", uniqueConstraints = @UniqueConstraint(columnNames = { "room_id", "name" }))
+@Table(
+        name = "seats",
+        uniqueConstraints = @UniqueConstraint(columnNames = { "room_id", "row_index", "col_index" })
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,11 +20,18 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Ghế sẽ xác định theo row/col thay vì chỉ name
     @Column(nullable = false)
-    private String name; // Ví dụ: A1, B5...
+    private Integer rowIndex;
 
     @Column(nullable = false)
-    private boolean active = true; // true = dùng được, false = ngưng sử dụng
+    private Integer colIndex;
+
+    // Mã ghế (A1, B5...), FE có thể generate
+    private String name;
+
+    @Column(nullable = false)
+    private boolean active = true; // true = dùng được, false = không sử dụng
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)

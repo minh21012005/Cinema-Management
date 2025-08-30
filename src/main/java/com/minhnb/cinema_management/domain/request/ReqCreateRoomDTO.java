@@ -1,6 +1,7 @@
 package com.minhnb.cinema_management.domain.request;
 
 import lombok.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -8,9 +9,20 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ReqCreateRoomDTO {
-    private String name;
-    private Long cinemaId;
-    private Long roomTypeId;
-    private int rows;
-    private int cols;
+    private String name;       // tên phòng
+    private Long cinemaId;     // id rạp
+    private Long roomTypeId;   // id loại phòng
+    private List<SeatDTO> seats; // danh sách ghế
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SeatDTO {
+        private Integer row;   // chỉ số hàng
+        private Integer col;   // chỉ số cột
+        private Long type;     // seatTypeId
+        private String name;   // tên ghế (A1, B2, D1-2...)
+    }
 }

@@ -69,6 +69,11 @@ public class RoomService {
         Cinema cinema = cinemaService.findById(dto.getCinemaId())
                 .orElseThrow(() -> new IdInvalidException("Cinema not found with id = " + dto.getCinemaId()));
 
+        boolean exists = roomRepository.existsByNameAndCinema(dto.getName(), cinema);
+        if (exists) {
+            throw new IdInvalidException("Room name '" + dto.getName() + "' already exists in this cinema");
+        }
+
         // 2. Lấy RoomType
         RoomType roomType = roomTypeRepository.findById(dto.getRoomTypeId())
                 .orElseThrow(() -> new IdInvalidException("RoomType not found with id = " + dto.getRoomTypeId()));

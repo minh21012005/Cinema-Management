@@ -45,17 +45,6 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(this.roomService.fetchAllRoomType());
     }
 
-//    @PostMapping("/rooms")
-//    public ResponseEntity<Room> createRoom(@Valid @RequestBody ReqCreateRoomDTO dto) throws IdInvalidException {
-//        if (dto.getRows() <= 0 || dto.getCols() <= 0) {
-//            throw new IdInvalidException("Số hàng và số cột phải lớn hơn 0!");
-//        }
-//        if (dto.getRows() > 15 || dto.getCols() > 15) {
-//            throw new IdInvalidException("Số hàng và số cột phải nhỏ hơn hoặc bằng 15!");
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body(this.roomService.createRoom(dto));
-//    }
-
     @PostMapping("/rooms")
     public ResponseEntity<Room> createRoom(@RequestBody ReqCreateRoomDTO dto) throws IdInvalidException{
         return ResponseEntity.status(HttpStatus.OK).body(this.roomService.createRoom(dto));

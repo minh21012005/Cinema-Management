@@ -46,4 +46,19 @@ public class SeatService {
     public List<SeatType> fetchAllSeatTypes(){
         return this.seatTypeRepository.findAll();
     }
+
+    public Optional<Seat> findById(Long id){
+        return this.seatRepository.findById(id);
+    }
+
+    public ResSeatDTO changeSeatStatus(Seat seat){
+        seat.setActive(!seat.isActive());
+        seatRepository.save(seat);
+        ResSeatDTO dto = new ResSeatDTO();
+        dto.setId(seat.getId());
+        dto.setName(seat.getName());
+        dto.setActive(seat.isActive());
+        dto.setSeatType(seat.getSeatType());
+        return dto;
+    }
 }

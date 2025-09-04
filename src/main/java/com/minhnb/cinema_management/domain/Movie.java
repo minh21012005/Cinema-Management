@@ -30,8 +30,13 @@ public class Movie {
     @Column(nullable = false)
     private LocalDate releaseDate; // Ngày phát hành
 
+    private LocalDate endDate; // Ngày kết thúc chiếu (có thể null nếu chưa xác định)
+
     @Column(nullable = false)
     private boolean active = true; // Trạng thái phim
+
+    @Column(nullable = false)
+    private String poster;
 
     @ManyToMany
     @JoinTable(

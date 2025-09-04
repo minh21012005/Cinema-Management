@@ -18,6 +18,12 @@ public class Category {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
+    private String code;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
     @ManyToMany(mappedBy = "categories")
     private List<Movie> movies;
 }
